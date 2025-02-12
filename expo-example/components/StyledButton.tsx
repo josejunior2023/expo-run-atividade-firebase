@@ -1,19 +1,33 @@
-import {
-  Text,
-  TouchableHighlight,
-  TouchableHighlightProps,
-} from "react-native";
+import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
-import globalStyles from "../styles/globalStyles";
-
-type StyledButtonProps = {
+interface StyledButtonProps {
   title: string;
-} & TouchableHighlightProps;
-
-export default function StyledButton({ title, ...props }: StyledButtonProps) {
-  return (
-    <TouchableHighlight {...props} style={[globalStyles.button, props.style]}>
-      <Text style={globalStyles.buttonText}>{title}</Text>
-    </TouchableHighlight>
-  );
+  onPress: () => void;
+  textStyle?: object;
+  buttonStyle?: object;
 }
+
+const StyledButton: React.FC<StyledButtonProps> = ({
+  title,
+  onPress,
+  textStyle,
+  buttonStyle,
+}) => (
+  <TouchableOpacity style={[styles.button, buttonStyle]} onPress={onPress}>
+    <Text style={[styles.buttonText, textStyle]}>{title}</Text>
+  </TouchableOpacity>
+);
+
+const styles = StyleSheet.create({
+  button: {
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
+
+export default StyledButton;

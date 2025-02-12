@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 
+// Definindo o tema e as cores
 const theme = {
   primaryColor: "#FFFFFF",
   accentColor: "#FF5252",
@@ -7,6 +8,8 @@ const theme = {
   borderColor: "#DDDDDD",
   borderRadius: 12,
   padding: 16,
+  inputBackground: "#FAFAFA", // Se estiver usando
+  buttonTextColor: "#FFFFFF", // Se estiver usando
 };
 
 const globalStyles = StyleSheet.create({
@@ -30,7 +33,7 @@ const globalStyles = StyleSheet.create({
     paddingHorizontal: 12,
     borderColor: theme.borderColor,
     borderRadius: theme.borderRadius,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: theme.inputBackground,
     fontSize: 16,
     color: theme.textColor,
     width: "100%",
@@ -51,7 +54,7 @@ const globalStyles = StyleSheet.create({
     elevation: 4,
   },
   buttonText: {
-    color: theme.primaryColor,
+    color: theme.buttonTextColor,
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",

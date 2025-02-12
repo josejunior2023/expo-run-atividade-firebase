@@ -7,7 +7,8 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "../../contexts/ThemeContext"; // Hook para acessar o tema
 
 import HeaderRight from "../../components/HeaderRight";
 import Loading from "../../components/Loading";
@@ -17,36 +18,75 @@ import Run from "../../types/Run";
 import RunForm from "../../components/RunForm";
 
 export default function Home() {
-  const { data, create, remove, refreshData, loading } =
-    useCollection<Run>("runs");
+  const {
+    data,
+    create,
+    remove,
+    refreshData,
+    loading: loadingCollection,
+  } = useCollection<Run>("runs");
   const [isCreating, setIsCreating] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado de loading para a criação da corrida
+  const { theme, colors } = useTheme(); // Pegando o tema e as cores do contexto
 
   const handleCreateRun = async (newRun: Run) => {
+    setLoading(true); // Definir como verdadeiro enquanto cria a corrida
     try {
       await create(newRun);
       await refreshData();
       Alert.alert("Sucesso", "Corrida cadastrada com sucesso!");
     } catch (error: any) {
       Alert.alert("Erro ao criar corrida", error.toString());
+    } finally {
+      setLoading(false); // Definir como falso quando a criação for concluída
     }
   };
 
+  // UseEffect para monitorar mudanças no loadingCollection e garantir que o estado de loading seja resetado
+  useEffect(() => {
+    if (!loadingCollection) {
+      setLoading(false); // Garantir que o loading seja desativado quando a coleta de dados terminar
+    }
+  }, [loadingCollection]);
+
+  // Controle de carregamento com base no estado do loadingCollection e loading
+  const isLoading = loadingCollection || loading;
+
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { backgroundColor: colors.backgroundColor }]}
+    >
       <Stack.Screen
         options={{
           title: "Corridas",
+          headerStyle: {
+            backgroundColor: colors.primaryButtonColor, // Cor de fundo do cabeçalho
+          },
+          headerTintColor: colors.textColor, // Cor do texto no cabeçalho
           headerRight: () => <HeaderRight />,
         }}
       />
 
-      <Text style={styles.title}>Gerencie suas corridas!</Text>
+      <Text style={[styles.title, { color: colors.textColor }]}>
+        Gerencie suas corridas!
+      </Text>
 
       <TouchableOpacity
-        style={[styles.actionButton, isCreating && styles.cancelButton]}
+        style={[
+          styles.actionButton,
+          isCreating && styles.cancelButton,
+          { backgroundColor: colors.primaryButtonColor },
+        ]}
         onPress={() => setIsCreating((prev) => !prev)}
       >
-        <Text style={styles.actionButtonText}>
+        <Text
+          style={[
+            styles.actionButtonText,
+            {
+              color: theme === "light" ? "#000000" : "#FFFFFF", // Ajuste para texto preto no modo claro e branco no modo escuro
+            },
+          ]}
+        >
           {isCreating ? "Cancelar" : "Adicionar Corrida"}
         </Text>
       </TouchableOpacity>
@@ -60,7 +100,8 @@ export default function Home() {
         />
       )}
 
-      {loading ? (
+      {/* Condição de carregamento atualizada */}
+      {isLoading ? (
         <Loading />
       ) : (
         <FlatList
@@ -84,18 +125,15 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9F9F9",
     padding: 16,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#333",
     textAlign: "center",
     marginBottom: 16,
   },
   actionButton: {
-    backgroundColor: "#4CAF50",
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: "center",
@@ -110,7 +148,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF5252",
   },
   actionButtonText: {
-    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
   },

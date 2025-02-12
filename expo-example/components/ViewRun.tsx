@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { Alert, Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { useTheme } from "../contexts/ThemeContext";
 import Run from "../types/Run";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -10,6 +11,7 @@ interface ViewRunProps {
 
 export default function ViewRun({ run, onDelete }: ViewRunProps) {
   const router = useRouter();
+  const { toggleTheme, theme, colors } = useTheme(); // Obtendo as cores do tema
 
   const handleDelete = () => {
     Alert.alert("Confirmação", "Tem certeza que deseja excluir esta corrida?", [
@@ -19,32 +21,45 @@ export default function ViewRun({ run, onDelete }: ViewRunProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Detalhes da Corrida</Text>
+    <View
+      style={[styles.container, { backgroundColor: colors.backgroundColor }]}
+    >
+      <Text style={[styles.title, { color: colors.textColor }]}>
+        Detalhes da Corrida
+      </Text>
+
       <View style={styles.detailContainer}>
         <View style={styles.detailRow}>
-          <Icon name="map-marker-distance" size={20} color="#FF5252" />
-          <Text style={styles.detailText}>
+          <Icon name="map-marker-distance" size={20} color={colors.textColor} />
+          <Text style={[styles.detailText, { color: colors.textColor }]}>
             Distância: {run.distance.toFixed(2)} km
           </Text>
         </View>
         <View style={styles.detailRow}>
-          <Icon name="speedometer" size={20} color="#FF5252" />
-          <Text style={styles.detailText}>
+          <Icon name="speedometer" size={20} color={colors.textColor} />
+          <Text style={[styles.detailText, { color: colors.textColor }]}>
             Velocidade Média: {run.avgSpeed.toFixed(2)} km/h
           </Text>
         </View>
         <View style={styles.detailRow}>
-          <Icon name="clock" size={20} color="#FF5252" />
-          <Text style={styles.detailText}>Horário: {run.time}</Text>
+          <Icon name="clock" size={20} color={colors.textColor} />
+          <Text style={[styles.detailText, { color: colors.textColor }]}>
+            Horário: {run.time}
+          </Text>
         </View>
       </View>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
+          style={[
+            styles.button,
+            { backgroundColor: colors.primaryButtonColor },
+          ]}
           onPress={handleDelete}
         >
-          <Text style={styles.buttonText}>Excluir</Text>
+          <Text style={[styles.buttonText, { color: colors.textColor }]}>
+            Excluir
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -53,7 +68,6 @@ export default function ViewRun({ run, onDelete }: ViewRunProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
     padding: 16,
     borderRadius: 12,
     shadowColor: "#000",
@@ -67,7 +81,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
     marginBottom: 12,
     textAlign: "center",
   },
@@ -81,7 +94,6 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: "#555",
     marginLeft: 8,
   },
   buttonContainer: {
@@ -95,11 +107,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-  deleteButton: {
-    backgroundColor: "#FF5252",
-  },
   buttonText: {
-    color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "bold",
   },
